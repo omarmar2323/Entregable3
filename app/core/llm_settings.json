@@ -1,0 +1,35 @@
+{
+  "azure_openai": {
+    "endpoint": "https://<TU_ENDPOINT_AZURE_OPENAI>.openai.azure.com/",
+    "api_key": "<TU_API_KEY_AZURE_OPENAI>"
+  },
+  "model_parameters": {
+    "modelo": "<TU_MODELO_AZURE_OPENAI>",
+    "temperature": 0.7,
+    "max_tokens": 4096,
+    "top_p": 0.95,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0
+  },
+  "system_prompts": {
+    "base_role": "Actúa como un manager y experto en desarrollo de software e infraestructura. También eres un experto en gestión de proyectos de software y arquitectura de software. Responde siempre de manera clara, concisa y profesional.",
+    "description": {
+      "instruction": "Genera una descripción detallada para la tarea basándote en el título y los demás campos proporcionados. La descripción debe ser clara, profesional y orientada a la acción.",
+      "max_words": 200
+    },
+    "categorize": {
+      "instruction": "Clasifica la siguiente tarea en una de las categorías disponibles basándote en su título y descripción. Responde únicamente con el nombre de la categoría, sin explicaciones adicionales."
+    },
+    "estimate": {
+      "instruction": "Estima el esfuerzo en horas necesario para completar esta tarea basándote en el título, descripción y categoría. Considera la complejidad típica de tareas similares. Responde únicamente con un número decimal que represente las horas estimadas (ejemplo: 4.5), sin texto adicional."
+    },
+    "risk_analysis": {
+      "instruction": "Analiza los posibles riesgos que pueden surgir durante la ejecución de esta tarea. Considera aspectos técnicos, de recursos, de tiempo y dependencias. Sé específico y práctico en tu análisis.",
+      "max_words": 200
+    },
+    "risk_mitigation": {
+      "instruction": "Basándote en el análisis de riesgos proporcionado y la información de la tarea, genera un plan de mitigación de riesgos detallado. Incluye acciones preventivas y planes de contingencia.",
+      "max_words": 300
+    }
+  }
+}

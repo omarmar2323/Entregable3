@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gray: #2c3e50;
+            --secondary-gray: #34495e;
+            --light-gray: #ecf0f1;
+            --medium-gray: #95a5a6;
+            --dark-gray: #7f8c8d;
+            --bg-gray: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--bg-gray);
+            color: var(--primary-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--primary-gray);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        
+        .card-header {
+            background-color: var(--secondary-gray);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-gray);
+            border-color: var(--secondary-gray);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-gray);
+            border-color: var(--primary-gray);
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+        
+        .btn-info {
+            background-color: var(--medium-gray);
+            border-color: var(--dark-gray);
+        }
+        
+        .badge {
+            padding: 0.5em 1em;
+        }
+        
+        .priority-baja { background-color: #95a5a6; }
+        .priority-media { background-color: #3498db; }
+        .priority-alta { background-color: #e67e22; }
+        .priority-bloqueante { background-color: #e74c3c; }
+        
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .story-card {
+            transition: transform 0.2s;
+        }
+        
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">📋 Gestor de Tareas - Historias de Usuario</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="mb-4" style="color: var(--primary-gray);">Historias de Usuario</h1>
+        
+        <!-- Formulario para generar historias con IA -->
+        <div class="form-container">
+            <h3 class="mb-3">Generar Nueva Historia de Usuario con IA</h3>
+            <form method="post" action="/user-stories">
+                <div class="mb-3">
+                    <label for="prompt" class="form-label">Describe la funcionalidad que deseas implementar:</label>
+                    <textarea 
+                        class="form-control" 
+                        id="prompt" 
+                        name="prompt" 
+                        rows="4" 
+                        required
+                        placeholder="Ejemplo: Necesito un sistema de autenticación de usuarios con Google y Facebook..."></textarea>
+                    <small class="form-text text-muted">
+                        La IA generará automáticamente una historia de usuario completa con todos sus campos.
+                    </small>
+                </div>
+                <button type="submit" class="btn btn-success">✨ Generar Historia con IA</button>
+            </form>
+        </div>
+
+        <!-- Listado de historias de usuario -->
+        <h3 class="mb-3">Historias Existentes</h3>
+        
+        {% if user_stories %}
+            <div class="row">
+                {% for story in user_stories %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card story-card h-100">
+                        <div class="card-header">
+                            <strong>{{ story.project }}</strong>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Como {{ story.role }}</h5>
+                            <p class="card-text">
+                                <strong>Quiero:</strong> {{ story.goal }}<br>
+                                <strong>Para:</strong> {{ story.reason }}
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">{{ story.description[:150] }}{% if story.description|length > 150 %}...{% endif %}</small>
+                            </p>
+                            <div class="mb-2">
+                                <span class="badge priority-{{ story.priority.value if story.priority.value else story.priority }}">
+                                    {{ story.priority.value if story.priority.value else story.priority }}
+                                </span>
+                                <span class="badge bg-secondary">{{ story.story_points }} pts</span>
+                                <span class="badge bg-info">{{ story.effort_hours }}h estimadas</span>
+                                <span class="badge bg-success">{{ story.tasks_total_hours }}h tareas</span>
+                            </div>
+                            <form method="post" action="/user-stories/{{ story.id }}/generate-tasks">
+                                <button type="submit" class="btn btn-primary btn-sm w-100 mt-2">
+                                    🎯 Generar Tareas
+                                </button>
+                            </form>
+                            <a href="/user-stories/{{ story.id }}/tasks" class="btn btn-info btn-sm w-100 mt-2">
+                                👁️ Ver Tareas
+                            </a>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Creada: {{ story.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                No hay historias de usuario aún. ¡Genera la primera usando el formulario arriba!
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Modal de advertencia para prompt vacío -->
+    <div class="modal fade" id="warningModal" tabindex="-1" aria-labelledby="warningModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #f39c12; color: white;">
+                    <h5 class="modal-title" id="warningModalLabel">⚠️ Advertencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, ingresa una descripción válida para generar la historia de usuario.</p>
+                    <p class="text-muted small">El prompt debe contener al menos una palabra.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Validación del formulario de generación de historia
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.querySelector('form[action="/user-stories"]');
+            var promptInput = document.getElementById('prompt');
+            var warningModal = new bootstrap.Modal(document.getElementById('warningModal'));
+            
+            // Función para verificar si un carácter es alfanumérico
+            function isAlphanumeric(code) {
+                // a-z: 97-122, A-Z: 65-90, 0-9: 48-57
+                // Caracteres acentuados latinos: 192-255
+                return (code >= 48 && code <= 57) ||
+                       (code >= 65 && code <= 90) ||
+                       (code >= 97 && code <= 122) ||
+                       (code >= 192 && code <= 255);
+            }
+            
+            // Función para contar palabras (secuencias de al menos 2 caracteres alfanuméricos)
+            function hasAtLeastOneWord(text) {
+                var consecutiveCount = 0;
+                for (var i = 0; i < text.length; i++) {
+                    var code = text.charCodeAt(i);
+                    if (isAlphanumeric(code)) {
+                        consecutiveCount++;
+                        if (consecutiveCount >= 2) {
+                            return true; // Encontramos al menos una palabra
+                        }
+                    } else {
+                        consecutiveCount = 0; // Reiniciar contador
+                    }
+                }
+                return false;
+            }
+            
+            form.addEventListener('submit', function(event) {
+                var promptValue = promptInput.value;
+                
+                if (!hasAtLeastOneWord(promptValue)) {
+                    event.preventDefault();
+                    warningModal.show();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

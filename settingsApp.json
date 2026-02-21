@@ -1,0 +1,17 @@
+{
+  "database": {
+    "host": "<TU_HOST_MYSQL>",
+    "port": 3306,
+    "user": "<TU_USUARIO_MYSQL>",
+    "password": "<TU_CONTRASEÑA_MYSQL>",
+    "database": "<TU_BASE_DE_DATOS_MYSQL>",
+    "echo": false,
+    "pool_size": 5,
+    "max_overflow": 10
+  },
+  "app": {
+    "name": "gestor_de_tareas_fastapi",
+    "version": "2.0.0",
+    "description": "api_rest_para_la_gestion_de_tareas_y_historias_de_usuario_con_base_de_datos_mysql"
+  }
+}

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareas - Historia de Usuario #{{ user_story.id }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gray: #2c3e50;
+            --secondary-gray: #34495e;
+            --light-gray: #ecf0f1;
+            --medium-gray: #95a5a6;
+            --dark-gray: #7f8c8d;
+            --bg-gray: #f8f9fa;
+        }
+        
+        body {
+            background-color: var(--bg-gray);
+            color: var(--primary-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--primary-gray);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        
+        .card-header {
+            background-color: var(--secondary-gray);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .btn-secondary {
+            background-color: var(--medium-gray);
+            border-color: var(--dark-gray);
+        }
+        
+        .badge {
+            padding: 0.5em 1em;
+        }
+        
+        .priority-baja { background-color: #95a5a6; }
+        .priority-media { background-color: #3498db; }
+        .priority-alta { background-color: #e67e22; }
+        .priority-bloqueante { background-color: #e74c3c; }
+        
+        .status-pendiente { background-color: #95a5a6; }
+        .status-en_progreso { background-color: #3498db; }
+        .status-en_revision { background-color: #f39c12; }
+        .status-completada { background-color: #27ae60; }
+        
+        .story-header {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .task-card {
+            border: none;
+            border-left: 4px solid var(--secondary-gray);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .task-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .task-card .accordion-button {
+            background-color: var(--secondary-gray);
+            color: white;
+            padding: 15px 20px;
+        }
+        
+        .task-card .accordion-button:not(.collapsed) {
+            background-color: var(--primary-gray);
+            color: white;
+            box-shadow: none;
+        }
+        
+        .task-card .accordion-button::after {
+            filter: brightness(0) invert(1);
+        }
+        
+        .task-card .accordion-button:focus {
+            box-shadow: none;
+            border-color: transparent;
+        }
+        
+        .task-card .accordion-body {
+            padding: 20px;
+            background-color: white;
+        }
+        
+        .task-card .card-text {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .task-card .bg-light {
+            border-left: 3px solid var(--medium-gray);
+        }
+        
+        .accordion-item {
+            border: none;
+        }
+        
+        /* Estilos para subtítulos en análisis de riesgos */
+        .risk-content .subtitle {
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 0.95em;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .risk-content .subtitle:first-child {
+            margin-top: 0;
+        }
+        
+        /* Subtítulo dentro de título numerado - inline */
+        .risk-content .numbered-title .subtitle {
+            display: inline;
+            margin: 0;
+        }
+        
+        .risk-content .numbered-title {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .risk-content .numbered-title .number {
+            color: #6366f1;
+            font-weight: 700;
+        }
+        
+        /* Subtítulo dentro de título con viñeta - inline */
+        .risk-content .bullet-title .subtitle {
+            display: inline;
+            margin: 0;
+        }
+        
+        .risk-content .bullet-title {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .risk-content .bullet-title .bullet {
+            color: #6366f1;
+            font-weight: 700;
+            margin-right: 4px;
+        }
+        
+        .risk-content {
+            line-height: 1.7;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark mb-4">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">📋 Gestor de Tareas</span>
+            <a href="/user-stories" class="btn btn-outline-light btn-sm">← Volver a Historias</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Información de la Historia de Usuario -->
+        <div class="story-header">
+            <h2 class="mb-3">📖 Historia de Usuario #{{ user_story.id }}</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Proyecto:</strong> {{ user_story.project }}</p>
+                    <p><strong>Como:</strong> {{ user_story.role }}</p>
+                    <p><strong>Quiero:</strong> {{ user_story.goal }}</p>
+                    <p><strong>Para:</strong> {{ user_story.reason }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p>
+                        <span class="badge priority-{{ user_story.priority.value if user_story.priority.value else user_story.priority }}">
+                            Prioridad: {{ user_story.priority.value if user_story.priority.value else user_story.priority }}
+                        </span>
+                        <span class="badge bg-secondary">{{ user_story.story_points }} Story Points</span>
+                        <span class="badge bg-info">{{ user_story.effort_hours }} horas estimadas</span>
+                        <span class="badge bg-success">{{ user_story.tasks_total_hours }} horas en tareas</span>
+                    </p>
+                    <p><small class="text-muted">Creada: {{ user_story.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                </div>
+            </div>
+            <div class="mt-3">
+                <p><strong>Descripción:</strong></p>
+                <p class="text-muted">{{ user_story.description }}</p>
+            </div>
+        </div>
+
+        <!-- Listado de Tareas -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>🎯 Tareas Asociadas ({{ tasks|length }})</h3>
+            <small class="text-muted">Haz clic en el título para expandir/colapsar</small>
+        </div>
+
+        {% if tasks %}
+            <div class="accordion" id="tasksAccordion">
+                {% for task in tasks %}
+                <div class="accordion-item task-card mb-3">
+                    <h2 class="accordion-header" id="heading{{ task.id }}">
+                        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#collapse{{ task.id }}" 
+                                aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse{{ task.id }}">
+                            <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                <strong>{{ task.title }}</strong>
+                                <div>
+                                    <span class="badge priority-{{ task.priority.value if task.priority.value else task.priority }}">
+                                        {{ task.priority.value if task.priority.value else task.priority }}
+                                    </span>
+                                    <span class="badge status-{{ task.status.value if task.status.value else task.status }}">
+                                        {{ task.status.value if task.status.value else task.status }}
+                                    </span>
+                                    {% if task.effort_hours %}
+                                    <span class="badge bg-info">{{ task.effort_hours }}h</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse{{ task.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" 
+                         aria-labelledby="heading{{ task.id }}" data-bs-parent="#tasksAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="text-muted mb-2">Descripción:</h6>
+                                    <p class="card-text" style="white-space: pre-wrap;">{{ task.description }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="bg-light p-3 rounded">
+                                        {% if task.category %}
+                                        <p class="mb-2"><strong>Categoría:</strong> {{ task.category }}</p>
+                                        {% endif %}
+                                        <p class="mb-2"><strong>Asignado a:</strong> {{ task.assigned_to }}</p>
+                                        {% if task.effort_hours %}
+                                        <p class="mb-2"><strong>Esfuerzo:</strong> {{ task.effort_hours }} horas</p>
+                                        {% endif %}
+                                        <p class="mb-0"><small class="text-muted">ID: {{ task.id }} | {{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if task.risk_analysis %}
+                            <hr>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <h6 class="text-danger">⚠️ Análisis de Riesgos:</h6>
+                                    <div class="small risk-content" style="white-space: pre-wrap;">{{ task.risk_analysis }}</div>
+                                </div>
+                                {% if task.risk_mitigation %}
+                                <div class="col-md-6">
+                                    <h6 class="text-success">✅ Plan de Mitigación:</h6>
+                                    <div class="small risk-content" style="white-space: pre-wrap;">{{ task.risk_mitigation }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-warning" role="alert">
+                Esta historia de usuario aún no tiene tareas asociadas. 
+                Vuelve a la página de historias de usuario y usa el botón "Generar Tareas" para crear tareas automáticamente.
+            </div>
+        {% endif %}
+
+        <div class="mt-4 mb-5">
+            <a href="/user-stories" class="btn btn-secondary">← Volver a Historias de Usuario</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Transformar markdown a HTML con estilo - SIN EXPRESIONES REGULARES
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Función para eliminar # al inicio de una línea
+            function removeHashmarks(line) {
+                let trimmed = line.trim();
+                while (trimmed.startsWith('#')) {
+                    trimmed = trimmed.substring(1).trim();
+                }
+                return trimmed;
+            }
+            
+            // Función para extraer texto entre ** **
+            function extractBold(text) {
+                const start = text.indexOf('**');
+                if (start === -1) return null;
+                const end = text.indexOf('**', start + 2);
+                if (end === -1) return null;
+                return {
+                    before: text.substring(0, start),
+                    bold: text.substring(start + 2, end),
+                    after: text.substring(end + 2)
+                };
+            }
+            
+            // Función para extraer texto entre * * (itálica/énfasis simple)
+            function extractItalic(text) {
+                // Buscar * pero no **
+                let i = 0;
+                while (i < text.length) {
+                    if (text.charAt(i) === '*') {
+                        // Verificar que no sea **
+                        if (i + 1 < text.length && text.charAt(i + 1) === '*') {
+                            i += 2; // Saltar **
+                            continue;
+                        }
+                        // Encontramos un * simple, buscar el cierre
+                        let start = i;
+                        let j = start + 1;
+                        while (j < text.length) {
+                            if (text.charAt(j) === '*') {
+                                // Verificar que no sea **
+                                if (j + 1 < text.length && text.charAt(j + 1) === '*') {
+                                    j += 2;
+                                    continue;
+                                }
+                                // Encontramos el cierre
+                                return {
+                                    before: text.substring(0, start),
+                                    italic: text.substring(start + 1, j),
+                                    after: text.substring(j + 1)
+                                };
+                            }
+                            j++;
+                        }
+                    }
+                    i++;
+                }
+                return null;
+            }
+            
+            // Función para procesar una línea
+            function processLine(line) {
+                let trimmed = line.trim();
+                if (trimmed === '') return '';
+                
+                // Eliminar # de encabezados markdown
+                trimmed = removeHashmarks(trimmed);
+                if (trimmed === '') return '';
+                
+                // Detectar si es una lista numerada (1. 2. 3. etc)
+                let numberMatch = null;
+                for (let i = 1; i <= 99; i++) {
+                    const prefix = i + '.';
+                    if (trimmed.startsWith(prefix)) {
+                        numberMatch = i;
+                        trimmed = trimmed.substring(prefix.length).trim();
+                        break;
+                    }
+                }
+                
+                // Detectar si es una viñeta con guión (puede ser - o --)
+                let isBullet = false;
+                if (trimmed.startsWith('-')) {
+                    isBullet = true;
+                    trimmed = trimmed.substring(1).trim();
+                    // Si hay otro guión después, también quitarlo
+                    while (trimmed.startsWith('-')) {
+                        trimmed = trimmed.substring(1).trim();
+                    }
+                }
+                
+                // Procesar **texto** (negrita) y *texto* (itálica como subtítulo)
+                let result = '';
+                let remaining = trimmed;
+                let hasSubtitle = false;
+                
+                while (remaining.length > 0) {
+                    const boldData = extractBold(remaining);
+                    const italicData = extractItalic(remaining);
+                    
+                    // Determinar cuál viene primero
+                    let useBold = false;
+                    let useItalic = false;
+                    
+                    if (boldData && italicData) {
+                        // Usar el que aparezca primero
+                        if (boldData.before.length <= italicData.before.length) {
+                            useBold = true;
+                        } else {
+                            useItalic = true;
+                        }
+                    } else if (boldData) {
+                        useBold = true;
+                    } else if (italicData) {
+                        useItalic = true;
+                    }
+                    
+                    if (useBold) {
+                        result += boldData.before;
+                        // Verificar si después del bold hay dos puntos
+                        let boldText = boldData.bold;
+                        let afterBold = boldData.after.trim();
+                        if (afterBold.startsWith(':')) {
+                            boldText += ':';
+                            afterBold = afterBold.substring(1).trim();
+                        }
+                        result += '<span class="subtitle">' + boldText + '</span>';
+                        hasSubtitle = true;
+                        remaining = afterBold;
+                        if (remaining.length > 0 && !remaining.startsWith(' ')) {
+                            result += ' ';
+                        }
+                    } else if (useItalic) {
+                        result += italicData.before;
+                        // Verificar si después del italic hay dos puntos
+                        let italicText = italicData.italic;
+                        let afterItalic = italicData.after.trim();
+                        if (afterItalic.startsWith(':')) {
+                            italicText += ':';
+                            afterItalic = afterItalic.substring(1).trim();
+                        }
+                        result += '<span class="subtitle">' + italicText + '</span>';
+                        hasSubtitle = true;
+                        remaining = afterItalic;
+                        if (remaining.length > 0 && !remaining.startsWith(' ')) {
+                            result += ' ';
+                        }
+                    } else {
+                        result += remaining;
+                        break;
+                    }
+                }
+                
+                // Construir el HTML final según el tipo de línea
+                if (numberMatch !== null) {
+                    return '<br><span class="numbered-title"><span class="number">' + numberMatch + '.</span> ' + result + '</span>';
+                } else if (isBullet) {
+                    return '<br><span class="bullet-title"><span class="bullet">•</span> ' + result + '</span>';
+                } else if (result.trim() !== '') {
+                    return '<br>' + result;
+                }
+                return '';
+            }
+            
+            // Función principal para procesar el contenido
+            function processContent(text) {
+                // Normalizar saltos de línea
+                text = text.split('\r\n').join('\n');
+                text = text.split('\r').join('\n');
+                
+                // Dividir en líneas
+                let lines = text.split('\n');
+                let processedLines = [];
+                let pendingText = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i];
+                    let trimmed = line.trim();
+                    
+                    // Si la línea es solo un bullet (-, --, •), buscar la siguiente línea con contenido
+                    let onlyBullet = trimmed === '-' || trimmed === '--' || trimmed === '•';
+                    if (onlyBullet) {
+                        // Buscar la siguiente línea no vacía
+                        let j = i + 1;
+                        while (j < lines.length && lines[j].trim() === '') {
+                            j++;
+                        }
+                        if (j < lines.length) {
+                            let nextContent = lines[j].trim();
+                            if (nextContent !== '') {
+                                line = '- ' + nextContent;
+                                i = j; // Saltar hasta esa línea
+                                trimmed = line.trim();
+                            }
+                        }
+                    }
+                    
+                    // Si la línea es solo ":" o empieza con ":", unir con la anterior
+                    if (trimmed === ':' || (trimmed.startsWith(':') && trimmed.length < 3)) {
+                        if (processedLines.length > 0) {
+                            processedLines[processedLines.length - 1] += trimmed;
+                        }
+                        continue;
+                    }
+                    
+                    // Si la línea anterior termina sin : y esta empieza con :
+                    if (trimmed.startsWith(':') && processedLines.length > 0) {
+                        processedLines[processedLines.length - 1] += trimmed;
+                        continue;
+                    }
+                    
+                    // Verificar si la siguiente línea es solo ":"
+                    if (i + 1 < lines.length) {
+                        let nextTrimmed = lines[i + 1].trim();
+                        if (nextTrimmed === ':' || nextTrimmed.startsWith(': ')) {
+                            line = line + nextTrimmed;
+                            i++; // Saltar la siguiente línea
+                        }
+                    }
+                    
+                    processedLines.push(line);
+                }
+                
+                // Procesar cada línea
+                let result = [];
+                for (let line of processedLines) {
+                    let processed = processLine(line);
+                    if (processed !== '') {
+                        result.push(processed);
+                    }
+                }
+                
+                // Unir todo
+                let finalHtml = result.join('');
+                
+                // Limpiar <br> al inicio
+                while (finalHtml.startsWith('<br>')) {
+                    finalHtml = finalHtml.substring(4);
+                }
+                
+                // Reemplazar múltiples <br> consecutivos
+                while (finalHtml.indexOf('<br><br>') !== -1) {
+                    finalHtml = finalHtml.split('<br><br>').join('<br>');
+                }
+                
+                return finalHtml;
+            }
+            
+            // Aplicar a todos los elementos .risk-content
+            document.querySelectorAll('.risk-content').forEach(function(element) {
+                let originalText = element.textContent || element.innerText;
+                element.innerHTML = processContent(originalText);
+            });
+        });
+    </script>
+</body>
+</html>
